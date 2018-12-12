@@ -6,7 +6,7 @@
  * See the COPYING file for details
  */
 
-#include <muil/muil.h>
+#include "muil.h"
 
 MuilWidget *muil_widget_create_slider(unsigned int steps) {
 	MuilWidget *widget;

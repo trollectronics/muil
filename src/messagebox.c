@@ -7,7 +7,7 @@
  */
 
 
-#include <muil/muil.h>
+#include "muil.h"
 
 #define MESSAGE_BOX_WIDTH 256
 #define MESSAGE_BOX_HEIGHT 128

@@ -7,8 +7,8 @@
  */
 
 
-#ifndef MUIL_H
-#define MUIL_H
+#ifndef MUIL_MUIL_H_
+#define MUIL_MUIL_H_
 
 #include <stdbool.h>
 #include <draw/line.h>
@@ -18,8 +18,6 @@
 #include <draw/font.h>
 #include <draw/color.h>
 #include <draw/utf8.h>
-
-#include <mem.h>
 
 #define MUIL_PADDING_DEFAULT 4
 extern int muil_padding;

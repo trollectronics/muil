@@ -7,9 +7,7 @@
  */
 
 
-//#include <string.h>
-
-#include <muil/muil.h>
+#include "muil.h"
 
 MuilWidget *muil_widget_create_entry(DrawFont *font) {
 	MuilWidget *widget;

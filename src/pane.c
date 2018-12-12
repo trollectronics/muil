@@ -7,7 +7,7 @@
  */
 
 
-#include <muil/muil.h>
+#include "muil.h"
 
 MuilPane *muil_pane_create(int x, int y, int w, int h, MuilWidget *root_widget) {
 	MuilPane *pane;

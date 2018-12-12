@@ -7,7 +7,7 @@
  */
 
 
-#include <muil/muil.h>
+#include "muil.h"
 
 MuilWidget *muil_widget_create_button(MuilWidget *child) {
 	MuilWidget *widget;

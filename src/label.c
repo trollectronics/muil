@@ -7,7 +7,7 @@
  */
 
 
-#include <muil/muil.h>
+#include "muil.h"
 
 MuilWidget *muil_widget_create_label(DrawFont *font, const char *text) {
 	MuilWidget *widget;

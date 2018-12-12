@@ -9,7 +9,7 @@
 
 #include <stdbool.h>
 
-#include <muil/muil.h>
+#include "muil.h"
 #include <peripheral.h>
 #include <input.h>
 
