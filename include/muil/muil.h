@@ -35,6 +35,7 @@ struct MuilColor {
 	DrawColor widget_background;
 	DrawColor text;
 	DrawColor selected;
+	DrawColor text_selected;
 };
 
 extern MuilColor muil_color;

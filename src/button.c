@@ -194,7 +194,7 @@ void muil_button_request_size(MuilWidget *widget, int *w, int *h) {
 	struct MuilButtonProperties *p = widget->properties;
 	p->child->request_size(p->child, w, h);
 	(*w) += 8 +muil_padding * 2;
-	(*h) += 8 +muil_padding * 2;
+	(*h) +=  8 + muil_padding * 2;
 }
 
 void muil_button_render(MuilWidget *widget) {

@@ -168,7 +168,7 @@ void muil_listbox_scroll(MuilWidget *widget, int pos) {
 
 void muil_listbox_event_mouse(MuilWidget *widget, unsigned int type, MuilEvent *e) {
 	struct MuilListboxProperties *p = widget->properties;
-	static int scroll_y = -1;
+	static int scroll_y = -1; //TODO: can not be static, move to struct
 	if(!widget->enabled)
 		return;
 	if(type == MUIL_EVENT_TYPE_MOUSE_SCROLL) {
@@ -323,8 +323,6 @@ void muil_listbox_render(MuilWidget *widget) {
 		for(l = p->offset; l; l = l->next, i++) {
 			if(!l->surface)
 				break;
-			draw_set_color(muil_color.text);
-			draw_text_surface_draw(l->surface);
 		}
 		
 		if(p->selected >= p->scroll && p->selected < i) {
@@ -332,6 +330,18 @@ void muil_listbox_render(MuilWidget *widget) {
 			draw_set_color(muil_color.selected);
 			draw_rect_set_draw(p->selected_rect, 1);
 			//d_render_logic_op(DARNIT_RENDER_LOGIC_OP_NONE);
+		}
+		
+		i = p->scroll;
+		for(l = p->offset; l; l = l->next, i++) {
+			if(!l->surface)
+				break;
+			if(p->selected == i)
+				draw_set_color(muil_color.text_selected);
+			else
+				draw_set_color(muil_color.text);
+			
+			draw_text_surface_draw(l->surface);
 		}
 		
 		draw_set_color(muil_color.widget_border);

@@ -21,6 +21,7 @@ MuilColor muil_color = {
 	.widget_background = 15,
 	.text = 0,
 	.selected = 1,
+	.text_selected = 15,
 };
 
 void muil_init(int padding) {
