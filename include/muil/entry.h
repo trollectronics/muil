@@ -27,6 +27,7 @@ struct MuilEntryProperties {
 	char *offset;
 	DrawRectSet *background;
 	DrawLineSet *border;
+	DrawLineSet *border_shadow;
 	DrawLineSet *cursor;
 	char text[MUIL_ENTRY_LENGTH+1];
 };

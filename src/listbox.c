@@ -32,6 +32,7 @@ MuilWidget *muil_widget_create_listbox(DrawFont *font) {
 	p->offset = NULL;
 	p->font = font;
 	p->background = draw_rect_set_new(1);
+	p->border_shadow = draw_line_set_new(4, 1);
 	p->border = draw_line_set_new(4, 1);
 	p->selected_rect = draw_rect_set_new(1);
 	p->scrollbar = draw_rect_set_new(1);
@@ -58,6 +59,7 @@ void *muil_widget_destroy_listbox(MuilWidget *widget) {
 	muil_listbox_clear(widget);
 	draw_rect_set_free(p->background);
 	draw_line_set_free(p->border);
+	draw_line_set_free(p->border_shadow);
 	draw_rect_set_free(p->selected_rect);
 	draw_rect_set_free(p->scrollbar);
 	return muil_widget_destroy(widget);
@@ -268,11 +270,18 @@ void muil_listbox_resize(MuilWidget *widget, int x, int y, int w, int h) {
 	
 	draw_rect_set_move(p->background, 0, x, y, x + w, y + h);
 	
-	draw_line_set_move(p->border, 0, x, y, x + w, y);
-	draw_line_set_move(p->border, 1, x, y + h, x + w, y + h);
-	draw_line_set_move(p->border, 2, x, y, x, y + h);
-	draw_line_set_move(p->border, 3, x + w, y, x + w, y + h);
-
+	/*Border*/
+	draw_line_set_move(p->border, 0, x + 2, y + h, x + w - 2, y + h);
+	draw_line_set_move(p->border, 1, x + w - 1, y + h - 1, x + w, y + h - 2);
+	draw_line_set_move(p->border, 2, x + w, y + 2, x + w, y + h - 2);
+	draw_line_set_move(p->border, 3, x + w, y + 2, x + w - 2, y);
+	
+	/*Shadow*/
+	draw_line_set_move(p->border_shadow, 0, x + 2, y, x + w - 2, y);
+	draw_line_set_move(p->border_shadow, 1, x, y + 2, x + 2, y);
+	draw_line_set_move(p->border_shadow, 2, x, y + 2, x, y + h - 2);
+	draw_line_set_move(p->border_shadow, 3, x, y + h - 2, x + 2, y + h);
+	
 	if(!p->offset)
 		p->offset = p->list;
 
@@ -313,8 +322,12 @@ void muil_listbox_render(MuilWidget *widget) {
 		draw_set_color(muil_color.widget_background);
 		draw_rect_set_draw(p->background, 1);
 		
+		draw_set_color(muil_color.widget_border_shadow);
+		draw_line_set_draw(p->border_shadow, 4);
 		draw_set_color(muil_color.widget_border);
 		draw_line_set_draw(p->border, 4);
+		
+		
 		if(!p->offset)
 			return;
 		

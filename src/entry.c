@@ -38,6 +38,7 @@ MuilWidget *muil_widget_create_entry(DrawFont *font) {
 	p->background = draw_rect_set_new(1);
 	p->cursor = draw_line_set_new(1, 1);
 	p->border = draw_line_set_new(4, 1);
+	p->border_shadow = draw_line_set_new(4, 1);
 
 	widget->destroy = muil_widget_destroy_entry;
 	widget->set_prop = muil_entry_set_prop;
@@ -57,6 +58,7 @@ void *muil_widget_destroy_entry(MuilWidget *widget) {
 	draw_rect_set_free(p->background);
 	draw_line_set_free(p->cursor);
 	draw_line_set_free(p->border);
+	draw_line_set_free(p->border_shadow);
 	draw_text_surface_free(p->surface);
 	return muil_widget_destroy(widget);
 }
@@ -66,6 +68,8 @@ void muil_entry_event_key(MuilWidget *widget, unsigned int type, MuilEvent *e) {
 		return;
 	struct MuilEntryProperties *p = widget->properties;
 	int tw = 0;
+	int text_h = draw_font_glyph_h(p->font);
+	
 	switch(type) {
 		case MUIL_EVENT_TYPE_KEYBOARD_PRESS:
 			if(e->keyboard->keysym == 8) {
@@ -92,7 +96,7 @@ void muil_entry_event_key(MuilWidget *widget, unsigned int type, MuilEvent *e) {
 			draw_text_surface_reset(p->surface);
 			draw_text_surface_string_append(p->surface, p->offset);
 			tw = draw_font_string_w(p->font, p->offset);
-			draw_line_set_move(p->cursor, 0, widget->x + tw + 3, widget->y + 2, widget->x + tw + 3, widget->y + widget->h - 2);
+			draw_line_set_move(p->cursor, 0, widget->x + tw + 3, widget->y + widget->h/2 - text_h/2, widget->x + tw + 3, widget->y + widget->h/2 + text_h/2);
 			widget->needs_redraw = true;
 			break;
 	}
@@ -112,6 +116,8 @@ void muil_entry_event_click(MuilWidget *widget, unsigned int type, MuilEvent *e)
 void muil_entry_set_prop(MuilWidget *widget, int prop, MuilPropertyValue value) {
 	struct MuilEntryProperties *p = widget->properties;
 	int tw;
+	int text_h = draw_font_glyph_h(p->font);
+	
 	switch(prop) {
 		case MUIL_ENTRY_PROP_TEXT:
 			strncpy(p->text, value.p, MUIL_ENTRY_LENGTH);
@@ -121,7 +127,7 @@ void muil_entry_set_prop(MuilWidget *widget, int prop, MuilPropertyValue value) 
 			p->cursor_pos = strlen(p->text);
 			draw_text_surface_reset(p->surface);
 			draw_text_surface_string_append(p->surface, p->offset);
-			draw_line_set_move(p->cursor, 0, widget->x + tw + 3, widget->y + 2, widget->x + tw + 3, widget->y + widget->h - 2);
+			draw_line_set_move(p->cursor, 0, widget->x + tw + 3, widget->y + widget->h/2 - text_h/2, widget->x + tw + 3, widget->y + widget->h/2 + text_h/2);
 			widget->needs_redraw = true;
 			break;
 	}
@@ -162,10 +168,17 @@ void muil_entry_resize(MuilWidget *widget, int x, int y, int w, int h) {
 	
 	draw_rect_set_move(p->background, 0, x, y, x + w, y + h);
 	
-	draw_line_set_move(p->border, 0, x, y, x + w, y);
-	draw_line_set_move(p->border, 1, x, y + h, x + w, y + h);
-	draw_line_set_move(p->border, 2, x, y, x, y + h);
-	draw_line_set_move(p->border, 3, x + w, y, x + w, y + h);
+	/*Border*/
+	draw_line_set_move(p->border, 0, x + 2, y + h, x + w - 2, y + h);
+	draw_line_set_move(p->border, 1, x + w - 1, y + h - 1, x + w, y + h - 2);
+	draw_line_set_move(p->border, 2, x + w, y + 2, x + w, y + h - 2);
+	draw_line_set_move(p->border, 3, x + w, y + 2, x + w - 2, y);
+	
+	/*Shadow*/
+	draw_line_set_move(p->border_shadow, 0, x + 2, y, x + w - 2, y);
+	draw_line_set_move(p->border_shadow, 1, x, y + 2, x + 2, y);
+	draw_line_set_move(p->border_shadow, 2, x, y + 2, x, y + h - 2);
+	draw_line_set_move(p->border_shadow, 3, x, y + h - 2, x + 2, y + h);
 
 	if(p->surface != NULL)
 		draw_text_surface_free(p->surface);
@@ -173,7 +186,7 @@ void muil_entry_resize(MuilWidget *widget, int x, int y, int w, int h) {
 	p->surface = draw_text_surface_new(p->font, MUIL_ENTRY_LENGTH, w, x + 2, y + (h / 2) - (text_h / 2));
 	draw_text_surface_string_append(p->surface, p->offset);
 	tw = draw_font_string_w(p->font, p->offset);
-	draw_line_set_move(p->cursor, 0, widget->x + tw + 3, widget->y + 2, widget->x + tw + 3, widget->y + widget->h - 2);
+	draw_line_set_move(p->cursor, 0, widget->x + tw + 3, widget->y + widget->h/2 - text_h/2, widget->x + tw + 3, widget->y + widget->h/2 + text_h/2);
 }
 
 void muil_entry_request_size(MuilWidget *widget, int *w, int *h) {
@@ -196,6 +209,8 @@ void muil_entry_render(MuilWidget *widget) {
 		draw_set_color(muil_color.widget_background);
 		draw_rect_set_draw(p->background, 1);
 		
+		draw_set_color(muil_color.widget_border_shadow);
+		draw_line_set_draw(p->border_shadow, 4);
 		draw_set_color(muil_color.widget_border);
 		draw_line_set_draw(p->border, 4);
 		

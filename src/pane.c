@@ -48,7 +48,10 @@ MuilPane *muil_pane_create_title(int x, int y, int w, int h, MuilWidget *root_wi
 }
 
 void *muil_pane_destroy(MuilPane *pane) {
+	draw_line_set_free(pane->border_dark);
+	draw_line_set_free(pane->border_shadow);
 	draw_line_set_free(pane->border);
+	draw_line_set_free(pane->border_highlight);
 	draw_rect_set_free(pane->background);
 	free(pane);
 	return NULL;
