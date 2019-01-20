@@ -7,6 +7,7 @@
  */
 
 
+#include <stdio.h>
 #include "muil.h"
 
 MuilWidget *muil_widget_create_progressbar(DrawFont *font) {
@@ -24,6 +25,7 @@ MuilWidget *muil_widget_create_progressbar(DrawFont *font) {
 	p->font = font;
 	p->background = draw_rect_set_new(1);
 	p->border = draw_line_set_new(4, 1);
+	p->border_shadow = draw_line_set_new(4, 1);
 	p->bar = draw_rect_set_new(1);
 	p->progress = 0;
 	strcpy(p->text, "0%");
@@ -46,6 +48,7 @@ void *muil_widget_destroy_progressbar(MuilWidget *widget) {
 	draw_rect_set_free(p->background);
 	draw_rect_set_free(p->bar);
 	draw_line_set_free(p->border);
+	draw_line_set_free(p->border_shadow);
 	draw_text_surface_free(p->surface);
 	return muil_widget_destroy(widget);
 }
@@ -57,15 +60,15 @@ void muil_progressbar_set_prop(MuilWidget *widget, int prop, MuilPropertyValue v
 			if(value.i < 0 || value.i > 100)
 				break;
 			p->progress = value.i;
-			//sprintf(p->text, "%i%%", value.i);
+			sprintf(p->text, "%i%%", value.i);
 			draw_rect_set_move(p->bar, 0, widget->x + 2, widget->y + 2, widget->x + 2 + ((widget->w - 4)*value.i / 100), widget->y + widget->h - 2);
-			//if(p->surface != NULL)
-			//	draw_text_surface_free(p->surface);
-			//int text_w;
-			//int text_h;
-			//draw_font_string_geometrics(p->font, p->text, widget->w, &text_w, &text_h);
-			//p->surface = draw_text_surface_new(p->font, draw_utf8_chars_in_string(p->text), widget->w, widget->x + (widget->w / 2) - (text_w / 2), widget->y + (widget->h / 2) - (text_h / 2));
-			//draw_text_surface_string_append(p->surface, p->text);
+			if(p->surface != NULL)
+				draw_text_surface_free(p->surface);
+			int text_w;
+			int text_h;
+			draw_font_string_geometrics(p->font, p->text, widget->w, &text_w, &text_h);
+			p->surface = draw_text_surface_new(p->font, draw_utf8_chars_in_string(p->text), widget->w, widget->x + (widget->w / 2) - (text_w / 2), widget->y + (widget->h / 2) - (text_h / 2));
+			draw_text_surface_string_append(p->surface, p->text);
 			widget->needs_redraw = true;
 			break;
 	}
@@ -103,10 +106,17 @@ void muil_progressbar_resize(MuilWidget *widget, int x, int y, int w, int h) {
 	
 	draw_rect_set_move(p->background, 0, x, y, x + w, y + h);
 	
-	draw_line_set_move(p->border, 0, x, y, x + w, y);
-	draw_line_set_move(p->border, 1, x, y + h, x + w, y + h);
-	draw_line_set_move(p->border, 2, x, y, x, y + h);
-	draw_line_set_move(p->border, 3, x + w, y, x + w, y + h);
+	/*Border*/
+	draw_line_set_move(p->border, 0, x + 2, y + h, x + w - 2, y + h);
+	draw_line_set_move(p->border, 1, x + w - 1, y + h - 1, x + w, y + h - 2);
+	draw_line_set_move(p->border, 2, x + w, y + 2, x + w, y + h - 2);
+	draw_line_set_move(p->border, 3, x + w, y + 2, x + w - 2, y);
+	
+	/*Shadow*/
+	draw_line_set_move(p->border_shadow, 0, x + 2, y, x + w - 2, y);
+	draw_line_set_move(p->border_shadow, 1, x, y + 2, x + 2, y);
+	draw_line_set_move(p->border_shadow, 2, x, y + 2, x, y + h - 2);
+	draw_line_set_move(p->border_shadow, 3, x, y + h - 2, x + 2, y + h);
 
 	//draw_rect_set_move(p->bar, 0, widget->x+2, widget->y+2, widget->x+widget->w-2, widget->y+widget->h-2);
 	draw_rect_set_move(p->bar, 0, widget->x + 2, widget->y + 2, widget->x + 2 + ((widget->w - 4)*p->progress / 100), widget->y + widget->h - 2);
@@ -126,10 +136,10 @@ void muil_progressbar_request_size(MuilWidget *widget, int *w, int *h) {
 		*w = ww;
 	if(!h)
 		return;
-	struct MuilLabelProperties *p = widget->properties;
+	struct MuilEntryProperties *p = widget->properties;
 	int text_h = draw_font_glyph_h(p->font);
+
 	*h = text_h + 4;
-	*h = 8 + 4;
 }
 
 void muil_progressbar_render(MuilWidget *widget) {
@@ -139,6 +149,9 @@ void muil_progressbar_render(MuilWidget *widget) {
 		draw_set_color(muil_color.widget_background);
 		draw_rect_set_draw(p->background, 1);
 		
+		draw_set_color(muil_color.widget_border_shadow);
+		draw_line_set_draw(p->border_shadow, 4);
+		draw_set_color(muil_color.widget_border);
 		draw_line_set_draw(p->border, 4);
 
 		//d_render_logic_op(DARNIT_RENDER_LOGIC_OP_XOR);
@@ -146,7 +159,7 @@ void muil_progressbar_render(MuilWidget *widget) {
 		draw_rect_set_draw(p->bar, 1);
 		//d_render_logic_op(DARNIT_RENDER_LOGIC_OP_NONE);
 		draw_set_color(muil_color.text);
-		//draw_text_surface_draw(p->surface);
+		draw_text_surface_draw(p->surface);
 		
 		widget->needs_redraw = false;
 	}

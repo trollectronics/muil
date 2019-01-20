@@ -22,6 +22,7 @@ struct MuilProgressbarProperties {
 	DrawTextSurface *surface;
 	DrawRectSet *background;
 	DrawLineSet *border;
+	DrawLineSet *border_shadow;
 	DrawRectSet *bar;
 	int progress;
 	char text[5];
