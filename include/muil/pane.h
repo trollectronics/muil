@@ -22,6 +22,7 @@ typedef struct {
 	DrawLineSet *border;
 	DrawLineSet *border_highlight;
 	DrawRectSet *background;
+	DrawRectSet *background_border;
 	DrawRectSet *background_title;
 	DrawTextSurface *title_surface;
 	char *title;
