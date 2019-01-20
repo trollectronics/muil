@@ -9,6 +9,8 @@
 
 #include "muil.h"
 
+void muil_listbox_event_key(MuilWidget *widget, unsigned int type, MuilEvent *e);
+
 MuilWidget *muil_widget_create_listbox(DrawFont *font) {
 	MuilWidget *widget;
 	if((widget = malloc(sizeof(MuilWidget))) == NULL)
@@ -27,6 +29,7 @@ MuilWidget *muil_widget_create_listbox(DrawFont *font) {
 	widget->event_handler->remove =muil_event_remove;
 	widget->event_handler->send =muil_event_send;
 	widget->event_handler->add(widget,muil_listbox_event_mouse, MUIL_EVENT_TYPE_MOUSE);
+	widget->event_handler->add(widget,muil_listbox_event_key, MUIL_EVENT_TYPE_KEYBOARD);
 	struct MuilListboxProperties *p = widget->properties;
 	p->list = NULL;
 	p->offset = NULL;
@@ -168,17 +171,72 @@ void muil_listbox_scroll(MuilWidget *widget, int pos) {
 		widget->resize(widget, widget->x, widget->y, widget->w, widget->h);
 }
 
+void muil_listbox_event_key(MuilWidget *widget, unsigned int type, MuilEvent *e) {
+	int scroll;
+	if(!widget->enabled)
+		return;
+	
+	struct MuilListboxProperties *p = widget->properties;
+	
+	scroll = p->scroll;
+	
+	switch(type) {
+		case MUIL_EVENT_TYPE_KEYBOARD_PRESS:
+			if(e->keyboard->keysym == KEY(UP)) {
+				if(p->selected < 0)
+					p->selected = 0;
+				else if(p->selected == 0)
+					p->selected = 0;
+				else
+					p->selected -= 1;
+				
+				if(scroll < 0)
+					scroll = 0;
+				else if(scroll == 0)
+					scroll = 0;
+				else
+					scroll -= 1;
+				
+				muil_listbox_scroll(widget, scroll);
+				widget->resize(widget, widget->x, widget->y, widget->w, widget->h);
+				
+			} else if(e->keyboard->keysym == KEY(DOWN)) {
+				if(p->selected < 0)
+					p->selected = 0;
+				else if(p->selected >= p->size - 1)
+					p->selected = p->size - 1;
+				else
+					p->selected += 1;
+				
+				if(scroll < 0)
+					scroll = 0;
+				else if(scroll >= p->scroll_max)
+					scroll = p->scroll_max;
+				else
+					scroll += 1;
+				
+				muil_listbox_scroll(widget, scroll);
+				widget->resize(widget, widget->x, widget->y, widget->w, widget->h);
+			} else if(e->keyboard->keysym == KEY(RETURN)) {
+				widget->event_handler->send(widget, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE, NULL);
+			}
+	}
+}
+
 void muil_listbox_event_mouse(MuilWidget *widget, unsigned int type, MuilEvent *e) {
 	struct MuilListboxProperties *p = widget->properties;
 	static int scroll_y = -1; //TODO: can not be static, move to struct
 	if(!widget->enabled)
 		return;
+	
 	if(type == MUIL_EVENT_TYPE_MOUSE_SCROLL) {
 		p->scroll += e->mouse->wheel;
 		p->scroll = p->scroll < 0 ? 0 : p->scroll;
 		muil_listbox_scroll(widget, p->scroll);
 	} else if(e->mouse->x >= widget->x + widget->w -muil_padding * 3 && e->mouse->x < widget->x + widget->w -muil_padding) {
 		if(type == MUIL_EVENT_TYPE_MOUSE_PRESS) {
+			muil_selected_widget = widget;
+			
 			int sb_y1, sb_y2;
 			draw_rect_set_get(p->scrollbar, 0, NULL, &sb_y1, NULL, &sb_y2);
 			if(e->mouse->y < sb_y1) {
@@ -206,6 +264,7 @@ void muil_listbox_event_mouse(MuilWidget *widget, unsigned int type, MuilEvent *
 			return;
 		}
 	} else if(type == MUIL_EVENT_TYPE_MOUSE_PRESS && e->mouse->buttons & MUIL_EVENT_MOUSE_BUTTON_LEFT) {
+		muil_selected_widget = widget;
 		struct MuilListboxList *l;
 		int i = p->scroll;
 		int item_y = widget->y + 2;

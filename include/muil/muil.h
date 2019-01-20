@@ -40,6 +40,7 @@ struct MuilColor {
 	DrawColor text;
 	DrawColor selected;
 	DrawColor text_selected;
+	DrawColor text_disabled;
 };
 
 extern MuilColor muil_color;

@@ -28,6 +28,7 @@ MuilColor muil_color = {
 	.text = 0,
 	.selected = 1,
 	.text_selected = 15,
+	.text_disabled = 8,
 };
 
 void muil_init(int padding, DrawFont *title_font) {
