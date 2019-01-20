@@ -8,28 +8,37 @@
 
 
 #include "muil.h"
+#include <draw/font.h>
 #include <peripheral.h>
 
 int muil_padding;
 MuilWidget *muil_selected_widget;
 struct MuilPaneList muil_panelist_dialogue;
 
+DrawFont *muil_title_font;
+
 MuilColor muil_color = {
-	.window_border = 8,
-	.window_background = 7,
-	.widget_border = 8,
+	.window_border = 7,
+	.window_background = 15,
+	.widget_border = 7,
+	.widget_border_shadow = 8,
+	.widget_border_shadow_strong = 0,
+	.widget_border_highlight = 15,
 	.widget_background = 15,
 	.text = 0,
 	.selected = 1,
 	.text_selected = 15,
 };
 
-void muil_init(int padding) {
+void muil_init(int padding, DrawFont *title_font) {
 	muil_padding = padding;
 	muil_selected_widget = NULL;
 	muil_e_m_prev.x =muil_e_m_prev.y =muil_e_m_prev.buttons =muil_e_m_prev.wheel = 0;
 	muil_panelist_dialogue.next = NULL;
 	muil_panelist_dialogue.pane = NULL;
+	
+	muil_title_font = title_font;
+	
 	//d_input_unicode(1);
 	
 	//*((volatile uint32_t *) (PERIPHERAL_VGA_BASE + 0x20)) = 0x0;

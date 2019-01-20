@@ -112,8 +112,8 @@ void muil_label_render(MuilWidget *widget) {
 	if(widget->needs_redraw) {
 		struct MuilLabelProperties *p = widget->properties;
 		
-		draw_set_color(muil_color.window_background);
-		draw_rect_set_draw(p->background, 1);
+		//draw_set_color(muil_color.window_background);
+		//draw_rect_set_draw(p->background, 1);
 		
 		
 		draw_set_color(muil_color.text);

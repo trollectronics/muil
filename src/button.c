@@ -33,7 +33,10 @@ MuilWidget *muil_widget_create_button(MuilWidget *child) {
 	p->child = child;
 	p->activated = 0;
 	p->background = draw_rect_set_new(1);
-	p->border = draw_line_set_new(8, 1);
+	p->border_dark = draw_line_set_new(3, 1);
+	p->border_shadow = draw_line_set_new(2, 1);
+	p->border = draw_line_set_new(3, 1);
+	p->border_highlight = draw_line_set_new(2, 1);
 	p->active_border = draw_line_set_new(4, 1);
 	widget->destroy =muil_widget_destroy_button;
 	widget->set_prop =muil_button_set_prop;
@@ -64,7 +67,10 @@ MuilWidget *muil_widget_create_button_image() {
 void *muil_widget_destroy_button(MuilWidget *widget) {
 	struct MuilButtonProperties *p = widget->properties;
 	draw_rect_set_free(p->background);
+	draw_line_set_free(p->border_dark);
+	draw_line_set_free(p->border_shadow);
 	draw_line_set_free(p->border);
+	draw_line_set_free(p->border_highlight);
 	draw_line_set_free(p->active_border);
 	return muil_widget_destroy(widget);
 }
@@ -173,21 +179,31 @@ void muil_button_resize(MuilWidget *widget, int x, int y, int w, int h) {
 	
 	p->child->resize(p->child, x + 2 +muil_padding, y + 2 +muil_padding, w - 4 -muil_padding * 2, h - 4 -muil_padding * 2);
 	
-	draw_rect_set_move(p->background, 0, x, y, x + w, y + h);
+	draw_rect_set_move(p->background, 0, x + 2, y + 2, x + w - 1, y + h - 1);
 	
-	draw_line_set_move(p->border, 0, x, y, x + w - 1, y);
-	draw_line_set_move(p->border, 1, x, y + h, x + w - 1, y + h);
-	draw_line_set_move(p->border, 2, x, y, x, y + h - 1);
-	draw_line_set_move(p->border, 3, x + w, y, x + w, y + h - 1);
-	draw_line_set_move(p->border, 4, x + 2, y + 2, x + w - 3, y + 2);
-	draw_line_set_move(p->border, 5, x + 2, y + h - 2, x + w - 3, y + h - 2);
-	draw_line_set_move(p->border, 6, x + 2, y + 2, x + 2, y + h - 3);
-	draw_line_set_move(p->border, 7, x + w - 2, y + 2, x + w - 2, y + h - 3);
+	/*Dark shadow*/
+	draw_line_set_move(p->border_dark, 0, x + 2, y + h, x + w - 2, y + h);
+	draw_line_set_move(p->border_dark, 1, x + w - 1, y + h - 1, x + w, y + h - 2);
+	draw_line_set_move(p->border_dark, 2, x + w, y + 2, x + w, y + h - 2);
+	
+	/*Shadow*/
+	draw_line_set_move(p->border_shadow, 0, x + 1, y + h - 1, x + w - 2, y + h - 1);
+	draw_line_set_move(p->border_shadow, 1, x + w - 1, y + 1, x + w - 1, y + h - 2);
+	
+	/*Border*/
+	draw_line_set_move(p->border, 0, x + 2, y, x + w - 2, y);
+	draw_line_set_move(p->border, 1, x, y + 2, x + 2, y);
+	draw_line_set_move(p->border, 2, x, y + 2, x, y + h - 2);
+	
+	/*Highlight*/
+	draw_line_set_move(p->border_highlight, 0, x + 2, y + 1, x + w - 2, y + 1);
+	draw_line_set_move(p->border_highlight, 1, x + 1, y + 2, x +1, y + h - 2);
 
-	draw_line_set_move(p->active_border, 0, x, y + 1, x + w - 1, y + 1);
-	draw_line_set_move(p->active_border, 1, x, y + h - 1, x + w - 1, y + h - 1);
-	draw_line_set_move(p->active_border, 2, x + 1, y, x + 1, y + h - 1);
-	draw_line_set_move(p->active_border, 3, x + w - 1, y, x + w - 1, y + h - 1);
+	/*Active*/
+	draw_line_set_move(p->active_border, 0, x, y + 1, x + w, y + 1);
+	draw_line_set_move(p->active_border, 1, x, y + h, x + w, y + h);
+	draw_line_set_move(p->active_border, 2, x + 1, y, x + 1, y + h);
+	draw_line_set_move(p->active_border, 3, x + w, y, x + w, y + h);
 }
 
 void muil_button_request_size(MuilWidget *widget, int *w, int *h) {
@@ -201,15 +217,34 @@ void muil_button_render(MuilWidget *widget) {
 	if(widget->needs_redraw) {
 		struct MuilButtonProperties *p = widget->properties;
 		
-		draw_set_color(muil_color.window_background);
+		draw_set_color(muil_color.window_border);
 		draw_rect_set_draw(p->background, 1);
 		
 		p->child->needs_redraw = true;
 		p->child->render(p->child);
-		draw_set_color(muil_color.widget_border);
-		draw_line_set_draw(p->border, 8);
-		if(p->activated)
-			draw_line_set_draw(p->active_border, 4);
+		
+		if(p->activated) {
+			draw_set_color(muil_color.widget_border);
+			draw_line_set_draw(p->border_dark, 3);
+			draw_set_color(muil_color.widget_border_highlight);
+			draw_line_set_draw(p->border_shadow, 2);
+			draw_set_color(muil_color.widget_border_shadow_strong);
+			draw_line_set_draw(p->border, 3);
+			draw_set_color(muil_color.widget_border_shadow);
+			draw_line_set_draw(p->border_highlight, 3);
+		} else {
+			draw_set_color(muil_color.widget_border_shadow_strong);
+			draw_line_set_draw(p->border_dark, 3);
+			draw_set_color(muil_color.widget_border_shadow);
+			draw_line_set_draw(p->border_shadow, 2);
+			draw_set_color(muil_color.widget_border);
+			draw_line_set_draw(p->border, 3);
+			draw_set_color(muil_color.widget_border_highlight);
+			draw_line_set_draw(p->border_highlight, 3);
+		}
+		
+		//if(p->activated)
+		//	draw_line_set_draw(p->active_border, 4);
 		
 		widget->needs_redraw = false;
 	}

@@ -155,6 +155,11 @@ void muil_entry_resize(MuilWidget *widget, int x, int y, int w, int h) {
 	widget->h = h;
 	widget->needs_redraw = true;
 	
+	//Center widget y
+	int text_h = draw_font_glyph_h(p->font);
+	h = text_h + 4;
+	y += (widget->h - h)/2;
+	
 	draw_rect_set_move(p->background, 0, x, y, x + w, y + h);
 	
 	draw_line_set_move(p->border, 0, x, y, x + w, y);
@@ -164,7 +169,7 @@ void muil_entry_resize(MuilWidget *widget, int x, int y, int w, int h) {
 
 	if(p->surface != NULL)
 		draw_text_surface_free(p->surface);
-	int text_h = draw_font_glyph_h(p->font);
+	
 	p->surface = draw_text_surface_new(p->font, MUIL_ENTRY_LENGTH, w, x + 2, y + (h / 2) - (text_h / 2));
 	draw_text_surface_string_append(p->surface, p->offset);
 	tw = draw_font_string_w(p->font, p->offset);

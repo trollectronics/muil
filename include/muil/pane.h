@@ -17,8 +17,14 @@ typedef struct {
 	int y;
 	int w;
 	int h;
+	DrawLineSet *border_dark;
+	DrawLineSet *border_shadow;
 	DrawLineSet *border;
+	DrawLineSet *border_highlight;
 	DrawRectSet *background;
+	DrawRectSet *background_title;
+	DrawTextSurface *title_surface;
+	char *title;
 	MuilWidget *root_widget;
 	bool needs_redraw;
 } MuilPane;
@@ -29,6 +35,7 @@ struct MuilPaneList {
 };
 
 MuilPane *muil_pane_create(int x, int y, int w, int h, MuilWidget *root_widget);
+MuilPane *muil_pane_create_title(int x, int y, int w, int h, MuilWidget *root_widget, char *title);
 void *muil_pane_destroy(MuilPane *pane);
 
 void muil_pane_resize(MuilPane *pane, int x, int y, int w, int h);

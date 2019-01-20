@@ -19,7 +19,10 @@ struct MuilButtonProperties {
 	MuilWidget *child;
 	int activated;
 	DrawRectSet *background;
+	DrawLineSet *border_dark;
+	DrawLineSet *border_shadow;
 	DrawLineSet *border;
+	DrawLineSet *border_highlight;
 	DrawLineSet *active_border;
 };
 

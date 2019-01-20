@@ -21,6 +21,7 @@
 
 #define MUIL_PADDING_DEFAULT 4
 extern int muil_padding;
+extern DrawFont *muil_title_font;
 
 typedef union {
 	void *p;
@@ -32,6 +33,9 @@ struct MuilColor {
 	DrawColor window_border;
 	DrawColor window_background;
 	DrawColor widget_border;
+	DrawColor widget_border_shadow;
+	DrawColor widget_border_shadow_strong;
+	DrawColor widget_border_highlight;
 	DrawColor widget_background;
 	DrawColor text;
 	DrawColor selected;
@@ -78,7 +82,7 @@ extern struct MuilPaneList muil_panelist_dialogue;
 
 #include "messagebox.h"
 
-void muil_init(int padding);
+void muil_init(int padding, DrawFont *title_font);
 void *muil_widget_destroy(MuilWidget *widget);
 
 #endif
