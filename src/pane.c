@@ -22,9 +22,9 @@ MuilPane *muil_pane_create(int x, int y, int w, int h, MuilWidget *root_widget) 
 	
 	
 	pane->border_dark = draw_line_set_new(2, 1);
-	pane->border_shadow = draw_line_set_new(5, 1);
+	pane->border_shadow = draw_line_set_new(7, 1);
 	pane->border = draw_line_set_new(4, 1);
-	pane->border_highlight = draw_line_set_new(4, 1);
+	pane->border_highlight = draw_line_set_new(7, 1);
 	
 	pane->root_widget = NULL;
 	pane->needs_redraw = true;
@@ -78,6 +78,10 @@ void muil_pane_resize(MuilPane *pane, int x, int y, int w, int h) {
 	draw_line_set_move(pane->border_shadow, 2, x + muil_padding*2 - 2, y + title_h + muil_padding*2 - 2, x + muil_padding*2 - 2, y + h - muil_padding*2);
 	draw_line_set_move(pane->border_shadow, 3, x + muil_padding*2 - 2, y + title_h + muil_padding*2 - 2, x + w - muil_padding*2, y + title_h + muil_padding*2 - 2);
 	
+	draw_line_set_move(pane->border_shadow, 4, x + muil_padding*2, y + muil_padding + 1, x + w - muil_padding*2, y + muil_padding + 1);
+	draw_line_set_move(pane->border_shadow, 5, x + muil_padding*2, y + muil_padding + (muil_padding + 2) + 1, x + w - muil_padding*2, y + muil_padding + (muil_padding + 2) + 1);
+	draw_line_set_move(pane->border_shadow, 6, x + muil_padding*2, y + muil_padding + (muil_padding + 2)*2 + 1, x + w - muil_padding*2, y + muil_padding + (muil_padding + 2)*2 + 1);
+	
 	/* Border */
 	draw_line_set_move(pane->border, 0, x, y, x, y + h - 1);
 	draw_line_set_move(pane->border, 1, x, y, x + w - 1, y);
@@ -87,6 +91,10 @@ void muil_pane_resize(MuilPane *pane, int x, int y, int w, int h) {
 	draw_line_set_move(pane->border_highlight, 1, x + 1, y + 1, x + w - 2, y + 1);
 	draw_line_set_move(pane->border_highlight, 2, x + (muil_padding*2 - 2), y + h - (muil_padding*2 - 1), x + w - (muil_padding*2 - 1), y + h - (muil_padding*2 - 1));
 	draw_line_set_move(pane->border_highlight, 3, x + w - (muil_padding*2 - 1), y + title_h + muil_padding*2 - 2, x + w - (muil_padding*2 - 1), y + h - (muil_padding*2 - 1));
+	
+	draw_line_set_move(pane->border_highlight, 4, x + muil_padding*2, y + muil_padding + 2, x + w - muil_padding*2, y + muil_padding + 2);
+	draw_line_set_move(pane->border_highlight, 5, x + muil_padding*2, y + muil_padding + (muil_padding + 2) + 2, x + w - muil_padding*2, y + muil_padding + (muil_padding + 2) + 2);
+	draw_line_set_move(pane->border_highlight, 6, x + muil_padding*2, y + muil_padding + (muil_padding + 2)*2 + 2, x + w - muil_padding*2, y + muil_padding + (muil_padding + 2)*2 + 2);
 	
 	if(pane->root_widget != NULL)
 		pane->root_widget->resize(pane->root_widget, x +muil_padding*3, y + muil_padding*3 + title_h, w - muil_padding*6, h - muil_padding*6 - title_h);
@@ -111,11 +119,11 @@ void muil_pane_render(MuilPane *pane) {
 		draw_set_color(muil_color.widget_border_shadow_strong);
 		draw_line_set_draw(pane->border_dark, 2);
 		draw_set_color(muil_color.widget_border_shadow);
-		draw_line_set_draw(pane->border_shadow, 4);
+		draw_line_set_draw(pane->border_shadow, 7);
 		draw_set_color(muil_color.widget_border);
 		draw_line_set_draw(pane->border, 2);
 		draw_set_color(muil_color.widget_border_highlight);
-		draw_line_set_draw(pane->border_highlight, 4);
+		draw_line_set_draw(pane->border_highlight, 7);
 		
 		pane->needs_redraw = false;
 	}
