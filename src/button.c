@@ -218,6 +218,8 @@ void muil_button_render(MuilWidget *widget) {
 		struct MuilButtonProperties *p = widget->properties;
 		
 		draw_set_color(muil_color.window_border);
+		if(!widget->enabled)
+				draw_set_color(muil_color.disabled);
 		draw_rect_set_draw(p->background, 1);
 		
 		p->child->needs_redraw = true;

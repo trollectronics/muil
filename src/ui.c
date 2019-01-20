@@ -28,7 +28,7 @@ MuilColor muil_color = {
 	.text = 0,
 	.selected = 1,
 	.text_selected = 15,
-	.text_disabled = 8,
+	.disabled = 8,
 };
 
 void muil_init(int padding, DrawFont *title_font) {
@@ -58,4 +58,9 @@ void *muil_widget_destroy(MuilWidget *widget) {
 	free(widget->properties);
 	free(widget);
 	return NULL;
+}
+
+void muil_widget_enable(MuilWidget *widget, bool enabled) {
+	widget->enabled = enabled;
+	widget->resize(widget, widget->x, widget->y, widget->w, widget->h);
 }

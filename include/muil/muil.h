@@ -40,7 +40,7 @@ struct MuilColor {
 	DrawColor text;
 	DrawColor selected;
 	DrawColor text_selected;
-	DrawColor text_disabled;
+	DrawColor disabled;
 };
 
 extern MuilColor muil_color;
@@ -85,5 +85,6 @@ extern struct MuilPaneList muil_panelist_dialogue;
 
 void muil_init(int padding, DrawFont *title_font);
 void *muil_widget_destroy(MuilWidget *widget);
+void muil_widget_enable(MuilWidget *widget, bool enabled);
 
 #endif

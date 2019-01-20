@@ -379,6 +379,8 @@ void muil_listbox_render(MuilWidget *widget) {
 		struct MuilListboxProperties *p = widget->properties;
 		
 		draw_set_color(muil_color.widget_background);
+		if(!widget->enabled)
+			draw_set_color(muil_color.disabled);
 		draw_rect_set_draw(p->background, 1);
 		
 		draw_set_color(muil_color.widget_border_shadow);
